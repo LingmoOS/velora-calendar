@@ -1,0 +1,449 @@
+dde-calendar (6.5.38) unstable; urgency=medium
+
+  * fix: resolve high CPU usage and account loading failures
+  * chore: reorganize project directory structure
+
+ -- Wang Yu <wangyu@uniontech.com>  Tue, 07 Apr 2026 15:03:02 +0800
+
+dde-calendar (6.5.37) unstable; urgency=medium
+
+  * fix: prevent icon scaling at high DPI zoom levels
+  * chore: update version to 6.5.36
+
+ -- Wang Yu <wangyu@uniontech.com>  Wed, 18 Mar 2026 12:25:32 +0800
+
+dde-calendar (6.5.36) unstable; urgency=medium
+
+  * fix: optimize application launch speed with lazy loading
+
+ -- Wang Yu <wangyu@uniontech.com>  Fri, 13 Mar 2026 14:25:49 +0800
+
+dde-calendar (6.5.35) unstable; urgency=medium
+
+  * chore: Unify linglong.yaml
+  * chore: Update version to 6.5.34
+
+ -- Wang Yu <wangyu@uniontech.com>  Thu, 05 Mar 2026 21:51:20 +0800
+
+dde-calendar (6.5.34) unstable; urgency=medium
+
+  * fix: Enhance asynchronous data handling in calendar client
+  * feat: Provide an option to enable/disable aiassistant plugin
+  * fix: fix translation generation for Qt6
+
+ -- dengzhongyuan <dengzhongyuan@uniontech.com>  Tue, 10 Feb 2026 14:24:02 +0800
+
+dde-calendar (6.5.33) unstable; urgency=medium
+
+  * chore: Update compiler flags for security enhancements
+  * fix: Fix linglong build fail
+  * fix: Enhance asynchronous data handling in calendar client
+  * build(cmake): refactor Qt version compatibility
+
+ -- wangrong <wangrong@uniontech.com>  Wed, 04 Feb 2026 17:16:58 +0800
+
+dde-calendar (6.5.32) unstable; urgency=medium
+
+  * chore: Update version to 6.5.32
+  * fix: Fix Qt5/Qt6 build compatibility.
+  * fix: update Qt version detection and D-Bus interface configuration
+  * feat: remove bash codes add systemd template support.
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 15 Jan 2026 19:07:09 +0800
+
+dde-calendar (6.5.31) unstable; urgency=medium
+
+  * chore: Update version to 6.5.31
+  * fix: [ui]adjust all-day event item heights and text positioning
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Fri, 05 Dec 2025 15:55:19 +0800
+
+dde-calendar (6.5.30) unstable; urgency=medium
+
+  * chore: Update version to 6.5.30
+  * fix: (calendar)improve lunar display with line wrapping for long texts
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Thu, 27 Nov 2025 16:54:09 +0800
+
+dde-calendar (6.5.29) unstable; urgency=medium
+
+  * chore: Update version to 6.5.29
+  * fix: revert prevent duplicate schedule type creation
+  * chore: enhance logging configuration and refactor DConfig setup
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Fri, 21 Nov 2025 09:00:08 +0800
+
+dde-calendar (6.5.28) unstable; urgency=medium
+
+  * chore: Update version to 6.5.28
+  * feat: Support mips64 linglong build (#283)
+  * feat(calendar): add 2026 Chinese holiday data and download script
+
+ -- zhanghongyuan <zhanghongyuan@uniontech.com>  Thu, 13 Nov 2025 15:30:51 +0800
+
+dde-calendar (6.5.27) unstable; urgency=medium
+
+  * chore: Update version to 6.5.27
+  * feat: [dbus]Enhance Calendar DBus API with AI-friendly methods
+  * fix: Improve account management for community edition
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 30 Oct 2025 19:21:38 +0800
+
+dde-calendar (6.5.26) unstable; urgency=medium
+
+  * chore: Update version to 6.5.26
+  * feat: Enhance DDE Calendar configuration and logging
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 23 Oct 2025 20:11:49 +0800
+
+dde-calendar (6.5.25) unstable; urgency=medium
+
+  * chore: Update version to 6.5.25
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 16 Oct 2025 20:39:17 +0800
+
+dde-calendar (6.5.24) unstable; urgency=medium
+
+  * chore: Update version to 6.5.24
+  * fix: Fix title bar icon not sync with system theme
+  * fix: Prevent duplicate schedule type creation
+  * fix: Implement community edition detection and update privacy URL logic
+
+ -- re2zero <yangwu@uniontech.com>  Fri, 10 Oct 2025 11:29:06 +0800
+
+dde-calendar (6.5.23) unstable; urgency=medium
+
+  * chore: Update version to 6.5.23
+  * fix: Fix twinkling issues.
+  * fix: Adjust sidebar icon size and set text format for title label.
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 25 Sep 2025 16:37:55 +0800
+
+dde-calendar (6.5.22) unstable; urgency=medium
+
+  * chore: Update linglong base and runtime
+
+ -- wangrong <wangrong@uniontech.com>  Wed, 17 Sep 2025 13:21:08 +0800
+
+dde-calendar (6.5.21) unstable; urgency=medium
+
+  * chore: Update version to 6.5.21
+  * fix some ui issues.
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 11 Sep 2025 14:13:40 +0800
+
+dde-calendar (6.5.20) unstable; urgency=medium
+
+  * chore: Update version to 6.5.17
+
+ -- dengzhongyuan <dengzhongyuan@uniontech.com>  Thu, 14 Aug 2025 09:27:48 +0800
+
+dde-calendar (6.5.19) unstable; urgency=medium
+
+  * Update version to 6.5.19. 
+
+ -- Tian ShiLin <tianshilin@uniontech.com>  Wed, 13 Aug 2025 10:34:27 +0800
+
+dde-calendar (6.5.18) unstable; urgency=medium
+
+  * Update version to 6.5.18.
+
+ -- Tian ShiLin <tianshilin@uniontech.com>  Thu, 07 Aug 2025 18:35:15 +0800
+
+dde-calendar (6.5.17) unstable; urgency=medium
+
+  * chore: Update version to 6.5.17
+  * fix: Update control center page and item height adjustments
+
+ -- re2zero <yangwu@uniontech.com>  Thu, 31 Jul 2025 14:01:35 +0800
+
+dde-calendar (6.5.16) unstable; urgency=medium
+
+  * chore: More logs for common
+  * Update deepin-manual resources
+
+ -- dengzhongyuan <dengzhongyuan@uniontech.com>  Wed, 16 Jul 2025 09:28:22 +0800
+
+dde-calendar (6.5.15) unstable; urgency=medium
+
+  * chore: Update deepin-manual resources
+
+ -- dengzhongyuan <dengzhongyuan@uniontech.com>  Wed, 09 Jul 2025 16:13:48 +0800
+
+dde-calendar (6.5.14) unstable; urgency=medium
+
+  * chore: Update deb sources for linglong yaml
+
+ -- wangrong <wangrong@uniontech.com>  Wed, 02 Jul 2025 11:19:32 +0800
+
+dde-calendar (6.5.13) unstable; urgency=medium
+
+  * update version 6.5.13. 
+
+ -- Tian ShiLin <tianshilin@uniontech.com>  Tue, 01 Jul 2025 21:28:30 +0800
+
+dde-calendar (6.5.12) unstable; urgency=medium
+
+  * chore: New version 6.5.12.
+
+ -- xiepengfei <xiepengfei@uniontech.com>  Fri, 27 Jun 2025 17:51:04 +0800
+
+dde-calendar (6.5.11) unstable; urgency=medium
+
+  * chore: New version 6.5.11.
+
+ -- re2zero <yangwu@uniontech.com>  Tue, 24 Jun 2025 17:23:45 +0800
+
+dde-calendar (6.5.10) unstable; urgency=medium
+
+  * chore: New version 6.5.10.
+
+ -- xiepengfei <xiepengfei@uniontech.com>  Mon, 23 Jun 2025 12:07:47 +0800
+
+dde-calendar (6.5.9) unstable; urgency=medium
+
+  * chore: Update dman's resources
+
+ -- dengzhongyuan <dengzhongyuan@uniontech.com>  Thu, 19 Jun 2025 13:52:14 +0800
+
+dde-calendar (6.5.8) unstable; urgency=medium
+
+  * fix cloud synchronization (bug 311911).
+
+ -- muyuankai <muyuankai@uniontech.com>  Tue, 13 May 2025 16:26:10 +0800
+
+dde-calendar (6.5.7) unstable; urgency=medium
+
+  * crash fix (bug 303095 313675).
+
+ -- muyuankai <muyuankai@uniontech.com>  Thu, 08 May 2025 15:12:35 +0800
+
+dde-calendar (6.5.6) unstable; urgency=medium
+
+  * feat: enhance holiday data handling and add 2024/2025 holiday JSON files
+
+ -- dengzhongyuan <dengzhongyuan@uniontech.com>  Tue, 22 Apr 2025 15:02:42 +0800
+
+dde-calendar (6.5.5) unstable; urgency=medium
+
+  * fix: crash caused by repeatedly deleting the
+         same schedule data (Bug: 303095)
+
+ -- renbin <renbin@uniontech.com>  Wed, 16 Apr 2025 15:35:34 +0800
+
+dde-calendar (6.5.4) unstable; urgency=medium
+
+  * fix: Fix some UI issues (#228)(Bug: 304001)
+
+ -- renbin <renbin@uniontech.com>  Thu, 06 Mar 2025 19:50:56 +0800
+
+dde-calendar (6.5.3) unstable; urgency=medium
+
+  * chore: New version 6.5.3.
+
+ -- xiepengfei <xiepengfei@uniontech.com>  Fri, 28 Feb 2025 10:46:43 +0800
+
+dde-calendar (6.5.2) unstable; urgency=medium
+
+  * New version 6.5.2
+  * Update linglong base to 25.0.0.
+
+ -- re2zero <yangwu@uniontech.com>  Tue, 11 Feb 2025 16:32:35 +0800
+
+dde-calendar (6.5.1) unstable; urgency=medium
+
+  * Update version to 6.5.1
+
+ -- wangrong <wangrong@uniontech.com>  Wed, 22 Jan 2025 13:43:31 +0800
+
+dde-calendar (6.5.0) unstable; urgency=medium
+
+  * feat: Qt5 to Qt6 Migration
+  * fix: missing translation files
+  * chore: add ControlCenter DBus adaptor (#213)
+  * feat: Add files generated by qdbusXML2cpp and DCONG2cpp
+
+ -- renbin <renbin@uniontech.com>  Mon, 20 Jan 2025 10:50:33 +0800
+
+dde-calendar (5.14.13) unstable; urgency=medium
+
+  * Update version to 5.14.13
+
+ -- renbin <renbin@uniontech.com>  Fri, 27 Dec 2024 16:24:07 +0800
+
+dde-calendar (5.14.12) unstable; urgency=medium
+
+  * Update version to 5.14.12
+
+ -- xiepengfei <xiepengfei@uniontech.com>  Sat, 14 Dec 2024 15:03:16 +0800
+
+dde-calendar (5.14.11) unstable; urgency=medium
+
+  * Update version to 5.14.11
+
+ -- renbin <renbin@uniontech.com>  Sat, 30 Nov 2024 18:21:11 +0800
+
+dde-calendar (5.14.10) unstable; urgency=medium
+
+  * chore: Update linglong build script.
+
+ -- xiepengfei <xiepengfei@uniontech.com>  Sat, 30 Nov 2024 14:08:37 +0800
+
+dde-calendar (5.14.9) UNRELEASED; urgency=medium
+
+  [ transifex-integration[bot] ]
+  * i18n: Translate dde-calendar_en_US.ts in ro
+  * i18n: Translate dde-calendar-service_en_US.ts in ro
+  * i18n: Translate dde-calendar_en_US.ts in sq
+  * i18n: Translate dde-calendar-service_en_US.ts in sq
+  * i18n: Translate dde-calendar-service_en_US.ts in zh_CN
+  * i18n: Removing dde-calendar-service_en_US.ts in zh_CN
+
+  [ myml ]
+  * feat: cweekwidget uses locale to replace tr
+
+ -- myml <wurongjie@deepin.org>  Sun, 29 Sep 2024 15:42:47 +0800
+
+dde-calendar (5.14.8) unstable; urgency=medium
+
+  * chore: Update linglong build script.
+
+ -- wangrong <wangrong@uniontech.com>  Sat, 19 Oct 2024 15:18:45 +0800
+
+dde-calendar (5.14.7) unstable; urgency=medium
+
+  * chore: linglong package slimming.
+
+ -- wangrong <wangrong@uniontech.com>  Fri, 18 Oct 2024 10:33:09 +0800
+
+dde-calendar (5.14.6) unstable; urgency=medium
+
+  * New version 5.14.6
+  * Adapt linglong.
+
+ -- re2zero <yangwu@uniontech.com>  Fri, 13 Sep 2024 14:06:16 +0800
+
+dde-calendar (5.14.5) unstable; urgency=medium
+
+  * fix: sidebar calendar widget(Issue: https://github.com/linuxdeepin/developer-center/issues/10343)
+  * feat: Execute reload after changing systemd(Issue: https://github.com/linuxdeepin/developer-center/issues/10093)
+  * fix: remind widget display position(Issue: https://github.com/linuxdeepin/developer-center/issues/10341)
+
+ -- myml <wurongjie@deepin.org>  Wed, 14 Aug 2024 16:37:30 +0800
+
+dde-calendar (5.14.4) unstable; urgency=medium
+
+  * feat: Unable to set timer reminder in Linglong environment
+
+ -- myml <wurongjie@deepin.org>  Thu, 08 Aug 2024 11:29:59 +0800
+
+dde-calendar (5.14.3) unstable; urgency=medium
+
+  * fix: dialog window display position error(Issue: https://github.com/linuxdeepin/developer-center/issues/10141)
+
+ -- myml <wurongjie@deepin.org>  Mon, 05 Aug 2024 14:16:16 +0800
+
+dde-calendar (5.14.2) unstable; urgency=medium
+
+  * chore: dbus activation adapt to AM(Issue: https://github.com/linuxdeepin/developer-center/issues/9742)
+  * fix: cloud sync being unavailable at startup
+
+ -- myml <wurongjie@deepin.org>  Fri, 26 Jul 2024 13:14:34 +0800
+
+dde-calendar (5.14.1) unstable; urgency=medium
+
+  * fix: cloud sync dbus error
+
+ -- myml <wurongjie@deepin.org>  Mon, 22 Jul 2024 10:41:23 +0800
+
+dde-calendar (5.14.0) unstable; urgency=medium
+
+  * fix: build error in uos system
+  * fix: problem of not displaying the floating frame
+  * chore(CI): add debian check workflow
+    Thanks to kuchune
+  * feat: Delayed start of service
+
+ -- myml <wurongjie@deepin.org>  Fri, 19 Jul 2024 14:21:37 +0800
+
+dde-calendar (5.13.1) unstable; urgency=medium
+
+  * fix: install deb package error(Issue: https://github.com/linuxdeepin/developer-center/issues/7763)
+
+ -- myml <wurongjie@deepin.org>  Tue, 09 Apr 2024 11:41:53 +0800
+
+dde-calendar (5.13.0) unstable; urgency=medium
+
+  * feat: add metainfo of dde
+  * Reapply "feat: get general settings from Control Center"
+  * Reapply "chore: update translations"
+  * feat: add docs files
+  * feat: follow system config
+  * chore: update translations
+  * chore: update reuse
+  * chore: typo
+  * feat: auto update holiday data
+  * feat: get system setting from dbus
+  * feat: enable cloud sync
+
+ -- myml <wurongjie@deepin.org>  Thu, 07 Mar 2024 13:54:33 +0800
+
+dde-calendar (5.12.1) unstable; urgency=medium
+
+  * fix: Unable sync schedule based on cloud sync
+  * feat: keep the json struct of getFestivalMonth
+
+ -- myml <wurongjie@deepin.org> Fri, 12 Jan 2024 17:47:37 +0800
+
+dde-calendar (5.12.0) unstable; urgency=medium
+
+  * feat: add deepin-log config
+  * feat: Supplement the holidays for the year 2024
+  * feat: Optimize holiday query, change the return type to QJsonArray
+
+ -- myml <wurongjie@deepin.org> Thu, 28 Dec 2023 10:23:56 +0800
+
+dde-calendar (5.11.1) unstable; urgency=medium
+
+  * fix: remove unused dframeworkdbus
+    Thanks to Felix Yan
+  * chore: correct typos in en_US docs
+    Thanks to Felix Yan
+  * feat: hide account login in community version(Issue: https://github.com/linuxdeepin/developer-center/issues/5912)
+
+ -- myml <wurongjie@deepin.org>  Tue, 12 Dec 2023 13:25:42 +0800
+
+dde-calendar (5.11.0) unstable; urgency=medium
+
+  [ Deepin Packages Builder ]
+  * feat: support for import ics file(Issue: https://github.com/linuxdeepin/developer-center/issues/5018)
+  * feat: support for export ics file(Issue: https://github.com/linuxdeepin/developer-center/issues/5018)
+  * feat: simplify the import process
+
+ -- myml <wurongjie@deepin.org>  Thu, 27 Jul 2023 14:17:10 +0800
+
+dde-calendar (5.10.1) unstable; urgency=medium
+
+  * fix: remove illegal gcc option
+    Thanks to rewine
+  * chore(CI): Update obs tag build workflow
+  * feat: avoid use hardcode path
+    Thanks to rewine
+  * fix: use imcomplete class QDesktopWidget
+  * feat: Remove caller checks for Huangli dbus interface
+
+ -- myml <wurongjie@deepin.org>  Mon, 24 Jul 2023 14:30:45 +0800
+
+dde-calendar (5.10.0) unstable; urgency=medium
+
+  * chore: deepin system does not support calendar sync
+  * chore: correct a typo in CMakeLists.txt
+
+ -- myml <wurongjie@deepin.org>  Thu, 6 Apr 2023 11:43:00 +0800
+
+
+dde-calendar (5.9.1) unstable; urgency=medium
+
+  * Init.
+
+ -- Clay Stan <claystan97@gmail.com>  Thu, 14 Jul 2022 14:13:00 +0800

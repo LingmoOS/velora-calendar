@@ -1,0 +1,32 @@
+function(TRANSLATION_GENERATE QMS)
+  find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
+
+  if (QT_VERSION_MAJOR MATCHES 6)
+    get_target_property(QT_LRELEASE Qt6::lrelease IMPORTED_LOCATION)
+  else()
+    set(QT_LRELEASE "lrelease")
+  endif()
+
+  if(NOT ARGN)
+    message(SEND_ERROR "Error: TRANSLATION_GENERATE() called without any .ts path")
+    return()
+  endif()
+
+  file(GLOB TS_FILES "${ARGN}/*.ts")
+  set(${QMS})
+  foreach(TSFIL ${TS_FILES})
+      get_filename_component(FIL_WE ${TSFIL} NAME_WE)
+      set(QMFIL ${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.qm)
+      list(APPEND ${QMS} ${QMFIL})
+      add_custom_command(
+          OUTPUT ${QMFIL}
+          COMMAND ${QT_LRELEASE} ${TSFIL} -qm ${QMFIL}
+          DEPENDS ${TSFIL}
+          COMMENT "Running ${QT_LRELEASE} on ${TSFIL}"
+          VERBATIM
+      )
+  endforeach()
+
+  set_source_files_properties(${${QMS}} PROPERTIES GENERATED TRUE)
+  set(${QMS} ${${QMS}} PARENT_SCOPE)
+endfunction()

@@ -1,0 +1,632 @@
+// SPDX-FileCopyrightText: 2019 - 2026 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
+
+#include "daccountmanagemodule.h"
+#include "commondef.h"
+#include "units.h"
+#include "calendarprogramexitcontrol.h"
+#include <qstandardpaths.h>
+#include <DSysInfo>
+
+const QString firstDayOfWeek_key = "firstDayOfWeek";
+const QString shortTimeFormat_key = "shortTimeFormat";
+const QString firstDayOfWeekSource_key = "firstDayOfWeekSource";
+const QString shortTimeFormatSource_key = "shortTimeFormatSource";
+
+DAccountManageModule::DAccountManageModule(QObject *parent)
+    : QObject(parent)
+    , m_syncFileManage(new SyncFileManage())
+    , m_accountManagerDB(new DAccountManagerDataBase)
+    , m_reginFormatConfig(DTK_CORE_NAMESPACE::DConfig::createGeneric("org.deepin.region-format", QString(), this))
+    , m_settings( getAppConfigDir().filePath( "config.ini"), QSettings::IniFormat)
+{
+    qCDebug(ServiceLogger) << "DAccountManageModule constructor called.";
+    if (m_reginFormatConfig->isValid()) {
+        connect(m_reginFormatConfig,
+                &DTK_CORE_NAMESPACE::DConfig::valueChanged,
+                this,
+                &DAccountManageModule::slotSettingChange);
+    } else {
+        connect(&m_timeDateDbus,
+                &DBusTimedate::ShortTimeFormatChanged,
+                this,
+                &DAccountManageModule::slotSettingChange);
+        connect(&m_timeDateDbus,
+                &DBusTimedate::WeekBeginsChanged,
+                this,
+                &DAccountManageModule::slotSettingChange);
+    }
+    m_isSupportUid = m_syncFileManage->getSyncoperation()->hasAvailable();
+    //新文件路径
+    QString newDbPath = getDBPath();
+    QString newDB(newDbPath + "/" + "accountmanager.db");
+    qCDebug(ServiceLogger) << "Setting account manager DB path to:" << newDB;
+    m_accountManagerDB->setDBPath(newDB);
+    m_accountManagerDB->dbOpen();
+
+    QDBusConnection::RegisterOptions options = QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
+    QDBusConnection sessionBus = QDBusConnection::sessionBus();
+
+    //将云端帐户信息基本数据与本地数据合并
+    qCDebug(ServiceLogger) << "Merging UnionID data.";
+    unionIDDataMerging();
+
+    //根据获取到的帐户信息创建对应的帐户服务
+    qCDebug(ServiceLogger) << "Creating account services for" << m_accountList.size() << "accounts.";
+    foreach (auto account, m_accountList) {
+        //如果不支持云同步且帐户类型为UID则过滤
+        if (!m_isSupportUid && account->accountType() == DAccount::Account_UnionID) {
+            continue;
+        }
+        DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(account));
+        QObject::connect(accountModule.data(), &DAccountModule::signalSettingChange, this, &DAccountManageModule::slotSettingChange);
+        m_accountModuleMap[account->accountID()] = accountModule;
+        DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(account->dbusPath(), account->dbusInterface(), accountModule, this));
+        if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
+            qCWarning(ServiceLogger) << "Failed to register account service - Account:" << account->accountID() 
+                                     << "Error:" << sessionBus.lastError().message();
+        } else {
+            m_AccountServiceMap[account->accountType()].insert(account->accountID(), accountService);
+            //如果是网络帐户则开启定时下载任务
+            if (account->isNetWorkAccount() && account->accountState().testFlag(DAccount::Account_Open)) {
+                qCDebug(ServiceLogger) << "Starting download task for network account:" << account->accountID();
+                accountModule->downloadTaskhanding(0);
+            }
+        }
+    }
+    m_generalSetting = getGeneralSettings();
+
+    connect(&m_timer, &QTimer::timeout, this, &DAccountManageModule::slotClientIsOpen);
+    m_timer.start(2000);
+
+    if (m_isSupportUid) {
+        qCDebug(ServiceLogger) << "UID is supported, connecting signals.";
+        QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::signalLoginStatusChange, this, &DAccountManageModule::slotUidLoginStatueChange);
+        QObject::connect(m_syncFileManage->getSyncoperation(), &Syncoperation::SwitcherChange, this, &DAccountManageModule::slotSwitcherChange);
+    }
+
+    //第一次启动加载完成后发送帐户改变信号
+    // emit signalLoginStatusChange();
+    qCDebug(ServiceLogger) << "DAccountManageModule constructed.";
+}
+
+QString DAccountManageModule::getAccountList()
+{
+    qCDebug(ServiceLogger) << "Getting account list as JSON string.";
+    QString accountStr;
+    DAccount::toJsonListString(m_accountList, accountStr);
+    return accountStr;
+}
+
+QString DAccountManageModule::getCalendarGeneralSettings()
+{
+    qCDebug(ServiceLogger) << "Getting calendar general settings as JSON string.";
+    QString cgSetStr;
+    m_generalSetting = getGeneralSettings();
+    DCalendarGeneralSettings::toJsonString(m_generalSetting, cgSetStr);
+    return cgSetStr;
+}
+
+void DAccountManageModule::setCalendarGeneralSettings(const QString &cgSet)
+{
+    qCDebug(ServiceLogger) << "Setting calendar general settings from JSON:" << cgSet;
+    DCalendarGeneralSettings::Ptr cgSetPtr = DCalendarGeneralSettings::Ptr(new DCalendarGeneralSettings);
+    DCalendarGeneralSettings::fromJsonString(cgSetPtr, cgSet);
+    if (m_generalSetting != cgSetPtr) {
+        setGeneralSettings(cgSetPtr);
+        DCalendarGeneralSettings::Ptr tmpSetting = DCalendarGeneralSettings::Ptr(m_generalSetting->clone());
+        m_generalSetting = cgSetPtr;
+        if (tmpSetting->firstDayOfWeek() != m_generalSetting->firstDayOfWeek()) {
+            qCDebug(ServiceLogger) << "First day of week changed from" << tmpSetting->firstDayOfWeek() 
+                                   << "to" << m_generalSetting->firstDayOfWeek();
+            emit firstDayOfWeekChange();
+        }
+        if (tmpSetting->timeShowType() != m_generalSetting->timeShowType()) {
+            qCDebug(ServiceLogger) << "Time format type changed from" << tmpSetting->timeShowType() 
+                                   << "to" << m_generalSetting->timeShowType();
+            emit timeFormatTypeChange();
+        }
+    }
+}
+
+int DAccountManageModule::getfirstDayOfWeek()
+{
+    // qCDebug(ServiceLogger) << "Getting first day of week.";
+    return static_cast<int>(m_generalSetting->firstDayOfWeek());
+}
+
+void DAccountManageModule::setFirstDayOfWeek(const int firstday)
+{
+    qCDebug(ServiceLogger) << "Setting first day of week to:" << firstday;
+    if (m_generalSetting->firstDayOfWeek() != firstday) {
+        m_generalSetting->setFirstDayOfWeek(static_cast<Qt::DayOfWeek>(firstday));
+        setGeneralSettings(m_generalSetting);
+        foreach (auto account, m_accountList) {
+            if (account->accountType() == DAccount::Account_UnionID) {
+                m_accountModuleMap[account->accountID()]->accountDownload();
+            }
+        }
+    }
+}
+
+int DAccountManageModule::getTimeFormatType()
+{
+    // qCDebug(ServiceLogger) << "Getting time format type.";
+    return static_cast<int>(m_generalSetting->timeShowType());
+}
+
+void DAccountManageModule::setTimeFormatType(const int timeType)
+{
+    qCDebug(ServiceLogger) << "Setting time format type to:" << timeType;
+    if (m_generalSetting->timeShowType() != timeType) {
+        m_generalSetting->setTimeShowType(static_cast<DCalendarGeneralSettings::TimeShowType>(timeType));
+        setGeneralSettings(m_generalSetting);
+        foreach (auto account, m_accountList) {
+            if (account->accountType() == DAccount::Account_UnionID) {
+                m_accountModuleMap[account->accountID()]->accountDownload();
+            }
+        }
+    }
+}
+
+void DAccountManageModule::remindJob(const QString &accountID, const QString &alarmID)
+{
+    qCDebug(ServiceLogger) << "Executing remind job for account:" << accountID << "alarm:" << alarmID;
+    if (m_accountModuleMap.contains(accountID)) {
+        m_accountModuleMap[accountID]->remindJob(alarmID);
+    }
+}
+
+void DAccountManageModule::updateRemindSchedules(bool isClear)
+{
+    qCDebug(ServiceLogger) << "Updating remind schedules for all accounts. isClear:" << isClear;
+    QMap<QString, DAccountModule::Ptr>::const_iterator iter = m_accountModuleMap.constBegin();
+    for (; iter != m_accountModuleMap.constEnd(); ++iter) {
+        iter.value()->updateRemindSchedules(isClear);
+    }
+}
+
+void DAccountManageModule::notifyMsgHanding(const QString &accountID, const QString &alarmID, const qint32 operationNum)
+{
+    qCDebug(ServiceLogger) << "Handling notification message for account:" << accountID << "alarm:" << alarmID << "operation:" << operationNum;
+    if (m_accountModuleMap.contains(accountID)) {
+        m_accountModuleMap[accountID]->notifyMsgHanding(alarmID, operationNum);
+    }
+}
+
+void DAccountManageModule::downloadByAccountID(const QString &accountID)
+{
+    qCDebug(ServiceLogger) << "Triggering download for account:" << accountID;
+    if (m_accountModuleMap.contains(accountID)) {
+        m_accountModuleMap[accountID]->accountDownload();
+    }
+}
+
+void DAccountManageModule::uploadNetWorkAccountData()
+{
+    qCDebug(ServiceLogger) << "Uploading network account data for all accounts.";
+    QMap<QString, DAccountModule::Ptr>::const_iterator iter = m_accountModuleMap.constBegin();
+    for (; iter != m_accountModuleMap.constEnd(); ++iter) {
+        iter.value()->uploadNetWorkAccountData();
+    }
+}
+
+//账户登录
+void DAccountManageModule::login()
+{
+    qCDebug(ServiceLogger) << "Login requested.";
+    m_syncFileManage->getSyncoperation()->optlogin();
+}
+//账户登出
+void DAccountManageModule::logout()
+{
+    qCDebug(ServiceLogger) << "Logout requested.";
+    m_syncFileManage->getSyncoperation()->optlogout();
+}
+
+bool DAccountManageModule::isSupportUid()
+{
+    // qCDebug(ServiceLogger) << "Checking UID support. Supported:" << m_isSupportUid;
+    return m_isSupportUid;
+}
+
+void DAccountManageModule::calendarOpen(bool isOpen)
+{
+    qCDebug(ServiceLogger) << "Calendar open status changed:" << isOpen;
+    //每次开启日历时需要同步数据
+    if (isOpen) {
+        QMap<QString, DAccountModule::Ptr>::iterator iter = m_accountModuleMap.begin();
+        for (; iter != m_accountModuleMap.end(); ++iter) {
+            iter.value()->accountDownload();
+        }
+    }
+}
+
+void DAccountManageModule::unionIDDataMerging()
+{
+    qCDebug(ServiceLogger) << "Starting UnionID data merging process.";
+    m_accountList = m_accountManagerDB->getAccountList();
+
+    //如果不支持云同步
+    if (!m_isSupportUid) {
+        DAccount::Ptr unionidDB;
+        auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
+            if (account->accountType() == DAccount::Account_UnionID) {
+                unionidDB = account;
+                return true;
+            }
+            return false;
+        };
+        //如果数据库中有unionid帐户
+        if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
+            //如果包含则移除
+            removeUIdAccount(unionidDB);
+        }
+        return;
+    }
+
+    DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
+    qCDebug(ServiceLogger) << "Fetched UnionID user info. Account ID:" << (accountUnionid.isNull() ? "null" : accountUnionid->accountID());
+
+    DAccount::Ptr unionidDB;
+    auto hasUnionid = [ =, &unionidDB](const DAccount::Ptr & account) {
+        if (account->accountType() == DAccount::Account_UnionID) {
+            unionidDB = account;
+            return true;
+        }
+        return false;
+    };
+    //如果unionid帐户不存在，则判断数据库中是否有登陆前的信息
+    //若有则移除
+    if (accountUnionid.isNull() || accountUnionid->accountID().isEmpty()) {
+        qCDebug(ServiceLogger) << "No active UnionID session. Checking for stale UID account in DB.";
+        //如果数据库中有unionid帐户
+        if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
+            qCDebug(ServiceLogger) << "Removing existing UID account:" << unionidDB->accountID();
+            removeUIdAccount(unionidDB);
+        }
+    } else {
+        //如果unionID登陆了
+
+        //如果数据库中有unionid帐户
+        if (std::any_of(m_accountList.begin(), m_accountList.end(), hasUnionid)) {
+            //如果是一个帐户则判断信息是否一致，不一致需更新
+            if (unionidDB->accountName() == accountUnionid->accountName()) {
+                qCDebug(ServiceLogger) << "Updating existing UID account:" << unionidDB->accountID();
+                updateUIdAccount(unionidDB, accountUnionid);
+            } else {
+                qCDebug(ServiceLogger) << "Replacing UID account - Old:" << unionidDB->accountID() 
+                                      << "New:" << accountUnionid->accountID();
+                removeUIdAccount(unionidDB);
+                addUIdAccount(accountUnionid);
+            }
+        } else {
+            qCDebug(ServiceLogger) << "Adding new UID account:" << accountUnionid->accountID();
+            addUIdAccount(accountUnionid);
+        }
+    }
+}
+
+void DAccountManageModule::initAccountDBusInfo(const DAccount::Ptr &account)
+{
+    qCDebug(ServiceLogger) << "Initializing DBus info for account:" << account->accountID();
+    QString typeStr = "";
+    switch (account->accountType()) {
+    case DAccount::Type::Account_UnionID:
+        typeStr = "uid";
+        break;
+    case DAccount::Type::Account_CalDav:
+        typeStr = "caldav";
+        break;
+    default:
+        typeStr = "default";
+        break;
+    }
+    QString sortID = DDataBase::createUuid().mid(0, 5);
+    account->setAccountState(DAccount::AccountState::Account_Setting | DAccount::Account_Calendar);
+    setUidSwitchStatus(account);
+    
+    //设置DBus路径和数据库名
+    //account
+    account->setAccountType(DAccount::Account_UnionID);
+    account->setDtCreate(QDateTime::currentDateTime());
+    account->setDbName(QString("account_%1_%2.db").arg(typeStr).arg(sortID));
+    account->setDbusPath(QString("%1/account_%2_%3").arg(serviceBasePath).arg(typeStr).arg(sortID));
+    account->setDbusInterface(accountServiceInterface);
+}
+
+void DAccountManageModule::removeUIdAccount(const DAccount::Ptr &uidAccount)
+{
+    qCDebug(ServiceLogger) << "Removing UID account:" << uidAccount->accountID();
+    //帐户列表移除uid帐户
+    m_accountList.removeOne(uidAccount);
+    //移除对应的数据库 ，停止对应的定时器
+    DAccountModule::Ptr accountModule(new DAccountModule(uidAccount));
+    accountModule->removeDB();
+    accountModule->downloadTaskhanding(2);
+    //帐户管理数据库中删除相关数据
+    m_accountManagerDB->deleteAccountInfo(uidAccount->accountID());
+}
+
+void DAccountManageModule::addUIdAccount(const DAccount::Ptr &uidAccount)
+{
+    qCDebug(ServiceLogger) << "Adding new UID account to DB:" << uidAccount->accountID();
+    //帐户管理数据库中添加uid帐户
+    initAccountDBusInfo(uidAccount);
+    m_accountManagerDB->addAccountInfo(uidAccount);
+    m_accountList.append(uidAccount);
+}
+
+void DAccountManageModule::updateUIdAccount(const DAccount::Ptr &oldAccount, const DAccount::Ptr &uidAccount)
+{
+    qCDebug(ServiceLogger) << "Updating UID account info for:" << oldAccount->accountID();
+    oldAccount->avatar() = uidAccount->avatar();
+    oldAccount->displayName() = uidAccount->displayName();
+    setUidSwitchStatus(oldAccount);
+    m_accountManagerDB->updateAccountInfo(oldAccount);
+}
+
+void DAccountManageModule::setUidSwitchStatus(const DAccount::Ptr &account)
+{
+    qCDebug(ServiceLogger) << "Setting UID switch status for account:" << account->accountID();
+    //获取控制中心开关状态
+    bool calendarSwitch = m_syncFileManage->getSyncoperation()->optGetCalendarSwitcher().switch_state;
+    //获取帐户信息状态
+    DAccount::AccountStates accountState = account->accountState();
+    accountState.setFlag(DAccount::Account_Open, calendarSwitch);
+    account->setAccountState(accountState);
+}
+
+// 获取通用配置
+DCalendarGeneralSettings::Ptr DAccountManageModule::getGeneralSettings()
+{
+    qCDebug(ServiceLogger) << "Getting general settings.";
+    auto cg = m_accountManagerDB->getCalendarGeneralSettings();
+    if (getFirstDayOfWeekSource() == DCalendarGeneralSettings::Source_System) {
+        qCDebug(ServiceLogger) << "First day of week source is System.";
+        // deepin23使用dconfig存储系统配置
+        if (m_reginFormatConfig->isValid()) {
+            bool ok;
+            auto dayofWeek =
+                Qt::DayOfWeek(m_reginFormatConfig->value(firstDayOfWeek_key).toInt(&ok));
+            if (ok) {
+                cg->setFirstDayOfWeek(dayofWeek);
+            } else {
+                qWarning() << "Unable to get first day of week from control center config file";
+            }
+        } else {
+            // 在deepin20.9使用dbus获取系统配置
+            qCDebug(ServiceLogger) << "Using DBus to get first day of week.";
+            cg->setFirstDayOfWeek(m_timeDateDbus.weekBegins());
+        }
+    }
+    if (getTimeFormatTypeSource() == DCalendarGeneralSettings::Source_System) {
+        qCDebug(ServiceLogger) << "Time format source is System.";
+        // 在deepin23使用dconfig获取系统配置
+        if (m_reginFormatConfig->isValid()) {
+            auto shortTimeFormat = m_reginFormatConfig->value(shortTimeFormat_key).toString();
+            if (shortTimeFormat.isEmpty()) {
+                qWarning() << "Unable to short time format from control center config file";
+            } else if (shortTimeFormat.contains("ap")) {
+                cg->setTimeShowType(DCalendarGeneralSettings::Twelve);
+            } else {
+                cg->setTimeShowType(DCalendarGeneralSettings::TwentyFour);
+            }
+        } else {
+            // 在deepin20.9使用dbus获取系统配置
+            qCDebug(ServiceLogger) << "Using DBus to get time format.";
+            if (m_timeDateDbus.shortTimeFormat() == 0) {
+                cg->setTimeShowType(DCalendarGeneralSettings::Twelve);
+            } else {
+                cg->setTimeShowType(DCalendarGeneralSettings::TwentyFour);
+            }
+        }
+    }
+    return cg;
+}
+
+// 更改通用配置
+void DAccountManageModule::setGeneralSettings(const DCalendarGeneralSettings::Ptr &cgSet)
+{
+    qCDebug(ServiceLogger) << "Setting general settings in DB.";
+    m_accountManagerDB->setCalendarGeneralSettings(cgSet);
+};
+
+void DAccountManageModule::slotFirstDayOfWeek(const int firstDay)
+{
+    qCDebug(ServiceLogger) << "Slot: First day of week changed to:" << firstDay;
+    if (getfirstDayOfWeek() != firstDay) {
+        setFirstDayOfWeek(firstDay);
+        emit firstDayOfWeekChange();
+    }
+}
+
+void DAccountManageModule::slotTimeFormatType(const int timeType)
+{
+    qCDebug(ServiceLogger) << "Slot: Time format type changed to:" << timeType;
+    if (getTimeFormatType() != timeType) {
+        setTimeFormatType(timeType);
+        emit timeFormatTypeChange();
+    }
+}
+
+DCalendarGeneralSettings::GeneralSettingSource DAccountManageModule::getFirstDayOfWeekSource()
+{
+    // qCDebug(ServiceLogger) << "Getting first day of week source.";
+    auto val = m_settings.value(firstDayOfWeekSource_key, DCalendarGeneralSettings::Source_Database);
+    return static_cast<DCalendarGeneralSettings::GeneralSettingSource>(val.toInt());
+}
+
+void DAccountManageModule::setFirstDayOfWeekSource(const DCalendarGeneralSettings::GeneralSettingSource source)
+{
+    qCDebug(ServiceLogger) << "Setting first day of week source to:" << source;
+    m_settings.setValue(firstDayOfWeekSource_key, source);
+    emit firstDayOfWeekChange();
+}
+
+DCalendarGeneralSettings::GeneralSettingSource DAccountManageModule::getTimeFormatTypeSource()
+{
+    // qCDebug(ServiceLogger) << "Getting time format type source.";
+    auto val = m_settings.value(shortTimeFormatSource_key, DCalendarGeneralSettings::GeneralSettingSource::Source_Database);
+    return static_cast<DCalendarGeneralSettings::GeneralSettingSource>(val.toInt());
+}
+
+void DAccountManageModule::setTimeFormatTypeSource(const DCalendarGeneralSettings::GeneralSettingSource source)
+{
+    qCDebug(ServiceLogger) << "Setting time format type source to:" << source;
+    m_settings.setValue(shortTimeFormatSource_key, source);
+    emit timeFormatTypeChange();
+}
+
+void DAccountManageModule::slotUidLoginStatueChange(const int status)
+{
+    qCDebug(ServiceLogger) << "Slot: UID login status changed to:" << status;
+    //因为有时登录成功会触发2次
+    static QList<int> oldStatus{};
+    //登录成功后会触发多次，状态也不一致。比如登录后会连续触发 1 -- 4 -- 1 信号
+    if (!oldStatus.contains(status)) {
+        oldStatus.append(status);
+        qCDebug(ServiceLogger) << "New status added to history:" << status;
+    } else {
+        //如果当前状态和上次状态一直，则退出
+        qCDebug(ServiceLogger) << "Duplicate status received, ignoring:" << status;
+        return;
+    }
+    //1：登陆成功 2：登陆取消 3：登出 4：获取服务端配置的应用数据成功
+    QDBusConnection::RegisterOptions options = QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals | QDBusConnection::ExportAllProperties;
+    QDBusConnection sessionBus = QDBusConnection::sessionBus();
+
+    switch (status) {
+    case 1: {
+        qCDebug(ServiceLogger) << "Processing login success";
+        //移除登出状态
+        if (oldStatus.contains(3)) {
+            oldStatus.removeAt(oldStatus.indexOf(3));
+            qCDebug(ServiceLogger) << "Removed logout status from history";
+        }
+
+        //登陆成功
+        DAccount::Ptr accountUnionid = m_syncFileManage->getuserInfo();
+        if (accountUnionid.isNull() || accountUnionid->accountName().isEmpty()) {
+            qCWarning(ServiceLogger) << "Failed to get account information after login";
+            oldStatus.removeAt(oldStatus.indexOf(1));
+            return;
+        }
+        qCDebug(ServiceLogger) << "Adding UID account after login:" << accountUnionid->accountID();
+        addUIdAccount(accountUnionid);
+
+        DAccountModule::Ptr accountModule = DAccountModule::Ptr(new DAccountModule(accountUnionid));
+        QObject::connect(accountModule.data(), &DAccountModule::signalSettingChange, this, &DAccountManageModule::slotSettingChange);
+        m_accountModuleMap[accountUnionid->accountID()] = accountModule;
+        DAccountService::Ptr accountService = DAccountService::Ptr(new DAccountService(accountUnionid->dbusPath(), accountUnionid->dbusInterface(), accountModule, this));
+        if (!sessionBus.registerObject(accountService->getPath(), accountService->getInterface(), accountService.data(), options)) {
+            qCWarning(ServiceLogger) << "Failed to register account service - Error:" << sessionBus.lastError().message();
+        } else {
+            qCDebug(ServiceLogger) << "Successfully registered account service";
+            m_AccountServiceMap[accountUnionid->accountType()].insert(accountUnionid->accountID(), accountService);
+            if (accountUnionid->accountState().testFlag(DAccount::Account_Open)) {
+                qCDebug(ServiceLogger) << "Starting download task for new account";
+                accountModule->downloadTaskhanding(0);
+            }
+        }
+    } break;
+    case 3: {
+        qCDebug(ServiceLogger) << "Processing logout";
+        //移除登录状态
+        if (oldStatus.contains(1)) {
+            oldStatus.removeAt(oldStatus.indexOf(1));
+            qCDebug(ServiceLogger) << "Removed login status from history";
+        }
+        //登出
+        if (m_AccountServiceMap[DAccount::Type::Account_UnionID].size() > 0) {
+            qCDebug(ServiceLogger) << "Removing UID account services";
+            //如果存在UID帐户则移除相关信息
+            //移除服务并注销
+            QString accountID = m_AccountServiceMap[DAccount::Type::Account_UnionID].firstKey();
+            DAccountService::Ptr accountService = m_AccountServiceMap[DAccount::Type::Account_UnionID].first();
+            m_AccountServiceMap[DAccount::Type::Account_UnionID].clear();
+            sessionBus.unregisterObject(accountService->getPath());
+            //移除uid帐户信息
+            //删除对应数据库
+            m_accountModuleMap[accountID]->removeDB();
+            m_accountModuleMap[accountID]->downloadTaskhanding(2);
+            m_accountList.removeOne(m_accountModuleMap[accountID]->account());
+            m_accountModuleMap.remove(accountID);
+            m_accountManagerDB->deleteAccountInfo(accountID);
+        }
+    } break;
+    default:
+        //其它状态当前不做处理
+        return;
+    }
+    emit signalLoginStatusChange();
+}
+
+void DAccountManageModule::slotSwitcherChange(const bool state)
+{
+    qCDebug(ServiceLogger) << "Calendar switcher changed to:" << state;
+    foreach (auto schedule, m_accountList) {
+        if (schedule->accountType() == DAccount::Account_UnionID) {
+            qCDebug(ServiceLogger) << "Updating UID account state for account:" << schedule->accountID();
+            if (state) {
+                schedule->setAccountState(schedule->accountState() | DAccount::Account_Open);
+                qCDebug(ServiceLogger) << "Starting download task for enabled account";
+                m_accountModuleMap[schedule->accountID()]->downloadTaskhanding(1);
+            } else {
+                schedule->setAccountState(schedule->accountState() & ~DAccount::Account_Open);
+                qCDebug(ServiceLogger) << "Stopping tasks for disabled account";
+                m_accountModuleMap[schedule->accountID()]->downloadTaskhanding(2);
+                m_accountModuleMap[schedule->accountID()]->uploadTaskHanding(0);
+            }
+            emit m_accountModuleMap[schedule->accountID()]->signalAccountState();
+            return;
+        }
+    }
+}
+
+void DAccountManageModule::slotSettingChange()
+{
+    qCDebug(ServiceLogger) << "Slot: Settings changed, updating general settings.";
+    DCalendarGeneralSettings::Ptr newSetting = getGeneralSettings();
+    if (newSetting->firstDayOfWeek() != m_generalSetting->firstDayOfWeek()) {
+        qCDebug(ServiceLogger) << "First day of week changed from" << m_generalSetting->firstDayOfWeek() 
+                              << "to" << newSetting->firstDayOfWeek();
+        m_generalSetting->setFirstDayOfWeek(newSetting->firstDayOfWeek());
+        emit firstDayOfWeekChange();
+    }
+
+    if (newSetting->timeShowType() != m_generalSetting->timeShowType()) {
+        qCDebug(ServiceLogger) << "Time format type changed from" << m_generalSetting->timeShowType() 
+                              << "to" << newSetting->timeShowType();
+        m_generalSetting->setTimeShowType(m_generalSetting->timeShowType());
+        emit timeFormatTypeChange();
+    }
+}
+
+void DAccountManageModule::slotClientIsOpen()
+{
+    // qCDebug(ServiceLogger) << "Checking if client is open...";
+    //如果日历界面不存在则退出
+    QProcess process;
+    process.start("pidof", QStringList() << "dde-calendar");
+
+    if (!process.waitForFinished(5000)) {
+        qCWarning(ServiceLogger) << "pidof command timeout";
+        return;
+    }
+
+    QString strResult = QString::fromUtf8(process.readAllStandardOutput()).trimmed();
+
+    static QString preResult = "";
+
+    if (preResult == strResult) {
+        qCDebug(ServiceLogger) << "Calendar client status unchanged";
+        return;
+    } else {
+        qCDebug(ServiceLogger) << "Calendar client status changed - Running:" << !strResult.isEmpty();
+        preResult = strResult;
+        DServiceExitControl exitControl;
+        exitControl.setClientIsOpen(!strResult.isEmpty());
+    }
+}
