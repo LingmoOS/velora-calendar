@@ -3,14 +3,14 @@ Categories=Application;Utility;Calendar;
 Comment=Calendar is a date tool.
 Exec=dde-calendar
 GenericName=Calendar
-Icon=dde-calendar
-Keywords=calendar;date;deepin;dde;
-Name=Deepin Calendar
+Icon=calendar
+Keywords=calendar;date;lingmo;dde;
+Name=Lingmo Calendar
 StartupNotify=false
 Terminal=false
 Type=Application
 #X-Deepin-TurboType=dtkwidget
-X-Deepin-Vendor=deepin
+X-Deepin-Vendor=lingmo
 X-MultipleArgs=false
 
 # Translations:

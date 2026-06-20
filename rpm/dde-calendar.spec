@@ -13,7 +13,7 @@ Release:        %{specrelease}
 Summary:        Calendar is a smart daily planner to schedule all things in life
 License:        GPLv3
 URL:            https://github.com/linuxdeepin/dde-calendar
-Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        dde-calendar-%{version}.tar.gz
 
 BuildRequires: cmake
 BuildRequires: qt5-devel
