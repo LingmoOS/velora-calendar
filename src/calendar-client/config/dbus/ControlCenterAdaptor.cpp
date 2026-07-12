@@ -29,7 +29,7 @@ ControlCenterAdaptor::~ControlCenterAdaptor()
 
 void ControlCenterAdaptor::ShowPage(const QString &url)
 {
-    // handle method call org.deepin.dde.ControlCenter1.ShowPage
+    // handle method call org.lingmo.ControlCenter1.ShowPage
     QMetaObject::invokeMethod(parent(), "ShowPage", Q_ARG(QString, url));
 }
 

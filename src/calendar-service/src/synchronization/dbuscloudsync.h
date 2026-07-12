@@ -11,7 +11,7 @@
 class Dbuscloudsync : public DServiceBase
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface","com.deepin.dataserver.cloudsync")
+    Q_CLASSINFO("D-Bus Interface","com.lingmo.dataserver.cloudsync")
 public:
     Dbuscloudsync(QObject* parent = nullptr);
 

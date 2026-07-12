@@ -18,27 +18,27 @@ inline const char *getTimedateService()
 {
     auto ver = DSysInfo::majorVersion().toInt();
     if (ver > 20) {
-        return "org.deepin.dde.Timedate1";
+        return "org.lingmo.Timedate1";
     }
-    return "com.deepin.daemon.Timedate";
+    return "com.lingmo.daemon.Timedate";
 }
 
 inline const char *getTimedatePath()
 {
     auto ver = DSysInfo::majorVersion().toInt();
     if (ver > 20) {
-        return "/org/deepin/dde/Timedate1";
+        return "/org/lingmo/Timedate1";
     }
-    return "/com/deepin/daemon/Timedate";
+    return "/com/lingmo/daemon/Timedate";
 }
 
 inline const char *getTimedateInterface()
 {
     auto ver = DSysInfo::majorVersion().toInt();
     if (ver > 20) {
-        return "org.deepin.dde.Timedate1";
+        return "org.lingmo.Timedate1";
     }
-    return "com.deepin.daemon.Timedate";
+    return "com.lingmo.daemon.Timedate";
 }
 
 #define TIMEDATE_DBUS_INTERFACE getTimedateInterface()

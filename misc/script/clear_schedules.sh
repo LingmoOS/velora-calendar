@@ -9,9 +9,9 @@
 # set -e  # Commented out to allow proper error handling in deletion loop
 
 # Configuration
-SERVICE="com.deepin.Calendar"
+SERVICE="com.lingmo.Calendar"
 OBJECT_PATH="/com/deepin/Calendar"
-INTERFACE="com.deepin.Calendar"
+INTERFACE="com.lingmo.Calendar"
 
 # Color codes for terminal output
 RED='\033[0;31m'

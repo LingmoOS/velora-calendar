@@ -173,7 +173,7 @@ int DAlarmManager::remindJob(const DRemindData::Ptr &remindData, const DSchedule
 
     QStringList actionlist;
     QVariantMap hints;
-    QString cmd = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+    QString cmd = QString("dbus-send --session --print-reply --dest=com.lingmo.dataserver.Calendar "
                           "/com/deepin/dataserver/Calendar/AccountManager "
                           "com.deepin.dataserver.Calendar.AccountManager.notifyMsgHanding string:%1 string:%2")
                   .arg(remindData->accountID())

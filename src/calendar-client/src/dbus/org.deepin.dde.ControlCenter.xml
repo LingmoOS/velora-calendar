@@ -1,5 +1,5 @@
 <node>
-  <interface name="org.deepin.dde.ControlCenter1">
+  <interface name="org.lingmo.ControlCenter1">
     <method name="ShowPage">
       <arg name="url" type="s" direction="in"/>
     </method>

@@ -19,16 +19,16 @@ inline const QString getNetworkService()
 {
     auto ver = DSysInfo::majorVersion().toInt();
     if (ver > 20) {
-        return QString("org.deepin.dde.Network1");
+        return QString("org.lingmo.Network1");
     }
-    return QString("com.deepin.daemon.Network");
+    return QString("com.lingmo.daemon.Network");
 }
 
 inline const QString getNetworkPath()
 {
     auto ver = DSysInfo::majorVersion().toInt();
     if (ver > 20) {
-        return QString("/org/deepin/dde/Network1");
+        return QString("/org/lingmo/Network1");
     }
     return QString("com/deepin/daemon/Network");
 }
@@ -37,9 +37,9 @@ inline const char *getNetworkInterface()
 {
     auto ver = DSysInfo::majorVersion().toInt();
     if (ver > 20) {
-        return "org.deepin.dde.Network1";
+        return "org.lingmo.Network1";
     }
-    return "com.deepin.daemon.Network";
+    return "com.lingmo.daemon.Network";
 }
 
 #define NETWORK_DBUS_INTERFACE getNetworkInterface()

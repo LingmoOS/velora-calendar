@@ -1,5 +1,5 @@
 <node>
-  <interface name="com.deepin.Calendar">
+  <interface name="com.lingmo.Calendar">
 	  <method name="RaiseWindow" />
       <method name="OpenSchedule">
          <arg direction="in" type="s" name="job">

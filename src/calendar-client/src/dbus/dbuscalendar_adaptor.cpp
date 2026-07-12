@@ -45,7 +45,7 @@ CalendarAdaptor::~CalendarAdaptor()
 
 void CalendarAdaptor::ActiveWindow()
 {
-    // handle method call com.deepin.Calendar.RaiseWindow
+    // handle method call com.lingmo.Calendar.RaiseWindow
     QMetaObject::invokeMethod(parent(), "ActiveWindow");
 }
 

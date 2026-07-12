@@ -16,7 +16,7 @@ class DUnionIDDbus : public QDBusAbstractInterface
 public:
     static inline const char *staticInterfaceName()
     {
-        return "com.deepin.utcloud.Daemon";
+        return "com.lingmo.utcloud.Daemon";
     }
 
 public:
@@ -128,7 +128,7 @@ public slots:
 
 
 namespace com {
-namespace deepin {
+namespace lingmo {
 namespace sync {
 typedef ::DUnionIDDbus cloudopt;
 }

@@ -16,14 +16,14 @@ class QVariant;
 QT_END_NAMESPACE
 
 /*
- * Adaptor class for interface com.deepin.Calendar
+ * Adaptor class for interface com.lingmo.Calendar
  */
 class CalendarAdaptor: public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "com.deepin.Calendar")
+    Q_CLASSINFO("D-Bus Interface", "com.lingmo.Calendar")
     Q_CLASSINFO("D-Bus Introspection", ""
-                "  <interface name=\"com.deepin.Calendar\">\n"
+                "  <interface name=\"com.lingmo.Calendar\">\n"
                 "    <method name=\"ActiveWindow\">\n"
                 "    </method>\n"
                 "    <method name=\"RaiseWindow\">\n"

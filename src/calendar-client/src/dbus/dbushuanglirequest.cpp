@@ -9,8 +9,8 @@
 #include <QDebug>
 
 DbusHuangLiRequest::DbusHuangLiRequest(QObject *parent)
-    : DbusRequestBase("/com/deepin/dataserver/Calendar/HuangLi",
-                      "com.deepin.dataserver.Calendar.HuangLi",
+    : DbusRequestBase("/com/lingmo/dataserver/Calendar/HuangLi",
+                      "com.lingmo.dataserver.Calendar.HuangLi",
                       QDBusConnection::sessionBus(),
                       parent)
 {

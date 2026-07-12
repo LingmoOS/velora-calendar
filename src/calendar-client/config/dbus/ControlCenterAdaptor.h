@@ -17,14 +17,14 @@ class QVariant;
 QT_END_NAMESPACE
 
 /*
- * Adaptor class for interface org.deepin.dde.ControlCenter1
+ * Adaptor class for interface org.lingmo.ControlCenter1
  */
 class ControlCenterAdaptor: public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.deepin.dde.ControlCenter1")
+    Q_CLASSINFO("D-Bus Interface", "org.lingmo.ControlCenter1")
     Q_CLASSINFO("D-Bus Introspection", ""
-"  <interface name=\"org.deepin.dde.ControlCenter1\">\n"
+"  <interface name=\"org.lingmo.ControlCenter1\">\n"
 "    <method name=\"ShowPage\">\n"
 "      <arg direction=\"in\" type=\"s\" name=\"url\"/>\n"
 "    </method>\n"

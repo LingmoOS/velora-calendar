@@ -17,7 +17,7 @@
 class DAccountManagerService : public DServiceBase
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.Calendar.AccountManager")
+    Q_CLASSINFO("D-Bus Interface", "com.lingmo.dataserver.Calendar.AccountManager")
     Q_PROPERTY(int firstDayOfWeek READ getfirstDayOfWeek WRITE setFirstDayOfWeek)
     Q_PROPERTY(int timeFormatType READ getTimeFormatType WRITE setTimeFormatType)
     Q_PROPERTY(int firstDayOfWeekSource READ getFirstDayOfWeekSource WRITE setFirstDayOfWeekSource)

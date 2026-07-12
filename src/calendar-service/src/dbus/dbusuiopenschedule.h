@@ -12,7 +12,7 @@ class DbusUIOpenSchedule : public QDBusAbstractInterface
 public:
     static inline const char *staticInterfaceName()
     {
-        return "com.deepin.Calendar";
+        return "com.lingmo.Calendar";
     }
     explicit DbusUIOpenSchedule(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = nullptr);
     inline void OpenSchedule(const QString strjson)

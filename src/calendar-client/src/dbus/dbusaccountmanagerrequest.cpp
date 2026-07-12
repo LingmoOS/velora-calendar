@@ -10,7 +10,7 @@
 #include <QDebug>
 
 DbusAccountManagerRequest::DbusAccountManagerRequest(QObject *parent)
-    : DbusRequestBase("/com/deepin/dataserver/Calendar/AccountManager", "com.deepin.dataserver.Calendar.AccountManager", QDBusConnection::sessionBus(), parent)
+    : DbusRequestBase("/com/lingmo/dataserver/Calendar/AccountManager", "com.lingmo.dataserver.Calendar.AccountManager", QDBusConnection::sessionBus(), parent)
 {
 
 }

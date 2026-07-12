@@ -6,20 +6,20 @@
 %define specrelease %{pkgrelease}%{?dist}
 %endif
 
-Name:           dde-calendar
+Name:           lingmo-calendar
 Version:        5.8.1.1
 
 Release:        %{specrelease}
 Summary:        Calendar is a smart daily planner to schedule all things in life
 License:        GPLv3
-URL:            https://github.com/linuxdeepin/dde-calendar
+URL:            https://github.com/linuxdeepin/lingmo-calendar
 Source0:        dde-calendar-%{version}.tar.gz
 
 BuildRequires: cmake
 BuildRequires: qt5-devel
 BuildRequires: dtkgui-devel
 BuildRequires: dtkwidget-devel
-BuildRequires: deepin-gettext-tools
+BuildRequires: lingmo-gettext-tools
 BuildRequires: gtest-devel
 
 %description
@@ -45,10 +45,10 @@ popd
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/%{name}/translations/*.qm
-%{_datadir}/deepin-manual/manual-assets/application/dde-calendar/calendar/*
+%{_datadir}/deepin-manual/manual-assets/application/lingmo-calendar/calendar/*
 %{_datadir}/dbus-1/services/*.service
 /etc/xdg/autostart/dde-calendar-service.desktop
-%{_datadir}/dde-calendar/data/*
+%{_datadir}/lingmo-calendar/data/*
 /usr/lib/deepin-daemon/dde-calendar-service
 
 %changelog

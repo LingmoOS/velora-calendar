@@ -15,7 +15,7 @@
 class DHuangliService : public DServiceBase
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "com.deepin.dataserver.HuangLi")
+    Q_CLASSINFO("D-Bus Interface", "com.lingmo.dataserver.HuangLi")
 public:
     explicit DHuangliService(QObject *parent = nullptr);
 public slots:

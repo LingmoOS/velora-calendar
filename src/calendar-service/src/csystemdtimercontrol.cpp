@@ -41,7 +41,7 @@ void CSystemdTimerControl::buildingConfiggure(const QVector<SystemDInfo> &infoVe
     foreach (auto info, infoVector) {
         fileNameList.append(QString("calendar-remind-%1-%2-%3").arg(info.accountID.mid(0,8)).arg(info.alarmID.mid(0, 8)).arg(info.laterCount));
         // 构建提醒命令
-        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.lingmo.dataserver.Calendar "
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.remindJob string:%1 string:%2")
                             .arg(info.accountID)
@@ -157,7 +157,7 @@ void CSystemdTimerControl::startCalendarServiceSystemdTimer()
 {
     qCInfo(ServiceLogger) << "Starting calendar service systemd timer";
     // 清理玲珑包的残留
-    QFile(m_systemdPath + "com.dde.calendarserver.calendar.service").remove();
+    QFile(m_systemdPath + "com.lingmo.calendarserver.calendar.service").remove();
     QFile(m_systemdPath + "com.dde.calendarserver.calendar.timer").remove();
     QFileInfo fileInfo(m_systemdPath + "timers.target.wants/com.dde.calendarserver.calendar.timer");
     //如果没有设置定时任务则开启定时任务
@@ -172,7 +172,7 @@ void CSystemdTimerControl::startDownloadTask(const QString &accountID, const int
     qCInfo(ServiceLogger) << "Starting download task for accountID:" << accountID << "Minute:" << minute;
     {
         //.service - 使用模板创建
-        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.lingmo.dataserver.Calendar "
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.downloadByAccountID string:%1 ")
                             .arg(accountID);
@@ -215,7 +215,7 @@ void CSystemdTimerControl::startUploadTask(const int minute)
     }
     {
         //.service - 使用模板创建
-        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.deepin.dataserver.Calendar "
+        QString remindCMD = QString("dbus-send --session --print-reply --dest=com.lingmo.dataserver.Calendar "
                                     "/com/deepin/dataserver/Calendar/AccountManager "
                                     "com.deepin.dataserver.Calendar.AccountManager.uploadNetWorkAccountData ");
         QString serviceName = UPLOADTASK_SERVICE.chopped(8); // 移除 ".service" 后缀

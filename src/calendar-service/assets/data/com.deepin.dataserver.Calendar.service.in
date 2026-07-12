@@ -1,4 +1,4 @@
 [D-BUS Service]
-Name=com.deepin.dataserver.Calendar
+Name=com.lingmo.dataserver.Calendar
 Exec=@EXEC_DDE_CALENDAR_SERVICE@
 

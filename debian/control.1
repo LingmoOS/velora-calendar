@@ -1,4 +1,4 @@
-Source: dde-calendar
+Source: lingmo-calendar
 Section: utils
 Priority: optional
 Maintainer: Deepin Packages Builder <packages@deepin.com>
@@ -6,7 +6,7 @@ Build-Depends:
  debhelper-compat (=11),
  cmake,
  pkg-config,
- deepin-gettext-tools,
+ lingmo-gettext-tools,
  qtbase5-dev,
  qttools5-dev,
  qttools5-dev-tools,
@@ -19,13 +19,13 @@ Build-Depends:
  libgcrypt20-dev
 Standards-Version: 4.3.0
 Homepage: http://www.deepin.org
-Vcs-Git: https://github.com/linuxdeepin/dde-calendar
+Vcs-Git: https://github.com/linuxdeepin/lingmo-calendar
 Rules-Requires-Root: no
 
-Package: dde-calendar
+Package: lingmo-calendar
 Architecture: linux-any
 Depends:
- dde-api,
+ lingmo-api,
  ${misc:Depends},
  ${shlibs:Depends},
 Description: Calendar is a smart daily planner to schedule all things in life.

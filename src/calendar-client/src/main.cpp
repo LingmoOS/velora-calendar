@@ -98,10 +98,10 @@ int main(int argc, char *argv[])
 
         QDBusConnection dbus = QDBusConnection::sessionBus();
         //如果注册失败打印出失败信息
-        if (!dbus.registerService("com.deepin.Calendar")) {
+        if (!dbus.registerService("com.lingmo.Calendar")) {
             qCWarning(ClientLogger) << "Failed to register DBus service:" << dbus.lastError().message();
         }
-        if (!dbus.registerObject("/com/deepin/Calendar", &ww)) {
+        if (!dbus.registerObject("/com/lingmo/Calendar", &ww)) {
             qCWarning(ClientLogger) << "Failed to register DBus object:" << dbus.lastError().message();
         }
         ww.slotTheme(DGuiApplicationHelper::instance()->themeType());

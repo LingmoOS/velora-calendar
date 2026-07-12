@@ -9,9 +9,9 @@
 
 # Configuration
 OUTPUT_FILE="${1:-dde_calendar_practical_test_$(date +%Y%m%d_%H%M%S).log}"
-SERVICE="com.deepin.Calendar"
-OBJECT_PATH="/com/deepin/Calendar"
-INTERFACE="com.deepin.Calendar"
+SERVICE="com.lingmo.Calendar"
+OBJECT_PATH="/com/lingmo/Calendar"
+INTERFACE="com.lingmo.Calendar"
 
 # Color codes for terminal output
 RED='\033[0;31m'

@@ -6,7 +6,7 @@ version: "1"
 
 package:
   id: org.dde.calendar
-  name: dde-calendar
+  name: lingmo-calendar
   version: 6.5.38.1
   kind: app
   description: |
@@ -16,11 +16,11 @@ base: org.deepin.base/25.2.2
 runtime: org.deepin.runtime.dtk/25.2.2
 
 command:
-  - dde-calendar
+  - lingmo-calendar
 
 build: |
 
-  apt -y install --download-only deepin-gettext-tools libdtk6gui-dev libdtk6widget-dev qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-svg-dev libgtest-dev libical-dev libgcrypt20-dev
+  apt -y install --download-only lingmo-gettext-tools libdtk6gui-dev libdtk6widget-dev qt6-base-dev qt6-tools-dev qt6-tools-dev-tools qt6-svg-dev libgtest-dev libical-dev libgcrypt20-dev
   bash ./install_dep /var/cache/apt/archives "$PREFIX"
 
   # 修改路径
@@ -32,14 +32,14 @@ build: |
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DVERSION=${VERSION} \
-        -DEXEC_DDE_CALENDAR="dde-calendar" \
+        -DEXEC_DDE_CALENDAR="lingmo-calendar" \
         -DEXEC_DDE_CALENDAR_SERVICE="${PREFIX}/libexec/deepin-daemon/dde-calendar-service"
   cmake --build build -j`nproc`
   cmake --build build --target install > install.log 2>&1
 
   # 项目生成应用名和动态隐式加载的依赖库，ldd无法找到的其他库
   LDD_FILES=(
-    dde-calendar
+    lingmo-calendar
     ../libexec/deepin-daemon/dde-calendar-service
   )
 

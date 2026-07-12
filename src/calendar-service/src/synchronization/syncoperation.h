@@ -12,8 +12,8 @@
 #include "dunioniddbus.h"
 
 //云同步DBUS接口信息
-#define SYNC_DBUS_PATH              "com.deepin.sync.Daemon"
-#define SYNC_DBUS_INTERFACE         "/com/deepin/utcloud/Daemon"
+#define SYNC_DBUS_PATH              "com.lingmo.sync.Daemon"
+#define SYNC_DBUS_INTERFACE         "/com/lingmo/utcloud/Daemon"
 
 
 //云同步错误码
@@ -33,7 +33,7 @@
 
 const QString utcloudcalendatpath = CALENDAR_SERVICE_PATH"/dde-calendar-service";
 
-using SyncInter = com::deepin::sync::cloudopt;
+using SyncInter = com::lingmo::sync::cloudopt;
 
 struct SyncoptResult {
     QString data = "";  //执行结果数据

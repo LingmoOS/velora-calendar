@@ -5,9 +5,9 @@
 This document describes the 6 new DBus interfaces added to DDE Calendar for AI/MCP (Model Control Protocol) integration. These APIs provide comprehensive calendar management functionality that can be easily consumed by AI systems.
 
 **Service Information:**
-- **Service Name:** `com.deepin.Calendar`
-- **Object Path:** `/com/deepin/Calendar`
-- **Interface:** `com.deepin.Calendar`
+- **Service Name:** `com.lingmo.Calendar`
+- **Object Path:** `/com/lingmo/Calendar`
+- **Interface:** `com.lingmo.Calendar`
 
 ## API Methods
 
@@ -82,24 +82,24 @@ JSON string containing schedule list and metadata.
 #### Example Usage
 ```bash
 # Query today's schedules (using "day")
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.QuerySchedules string:"day"
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.QuerySchedules string:"day"
 
 # Query today's schedules (using "today")
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.QuerySchedules string:"today"
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.QuerySchedules string:"today"
 
 # Query specific date
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.QuerySchedules string:"2025-10-29"
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.QuerySchedules string:"2025-10-29"
 
 # Search by keyword (supports Chinese)
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.QuerySchedules string:"search:会议"
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.QuerySchedules string:"search:会议"
 
 # Search in English  
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.QuerySchedules string:"search:meeting"
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.QuerySchedules string:"search:meeting"
 ```
 
 ---
@@ -135,13 +135,13 @@ String containing the created schedule's UUID.
 #### Example Usage
 ```bash
 # Create simple schedule
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.CreateSchedule \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.CreateSchedule \
   string:'{"title":"Meeting","startTime":"2025-10-29T14:00:00","endTime":"2025-10-29T15:00:00"}'
 
 # Create all-day event
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.CreateSchedule \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.CreateSchedule \
   string:'{"title":"Holiday","startTime":"2025-12-25T00:00:00","allDay":true}'
 ```
 
@@ -190,18 +190,18 @@ Boolean indicating operation success.
 #### Example Usage
 ```bash
 # Update schedule
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.ModifySchedule \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.ModifySchedule \
   string:"schedule-uuid" string:"update" string:'{"title":"Updated Meeting"}'
 
 # Delete schedule
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.ModifySchedule \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.ModifySchedule \
   string:"schedule-uuid" string:"delete" string:""
 
 # Snooze reminder for 15 minutes
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.ModifySchedule \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.ModifySchedule \
   string:"schedule-uuid" string:"snooze" string:"15"
 ```
 
@@ -271,18 +271,18 @@ GetCalendarView(viewType: string, date: string) → (viewData: string)
 #### Example Usage
 ```bash
 # Get today's view
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.GetCalendarView \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.GetCalendarView \
   string:"day" string:""
 
 # Get week view for specific date
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.GetCalendarView \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.GetCalendarView \
   string:"week" string:"2025-10-28"
 
 # Get month view
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.GetCalendarView \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.GetCalendarView \
   string:"month" string:"2025-10-01"
 ```
 
@@ -334,13 +334,13 @@ JSON string containing lunar calendar information.
 #### Example Usage
 ```bash
 # Get lunar info for today
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.GetLunarInfo \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.GetLunarInfo \
   string:"$(date +%Y-%m-%d)"
 
 # Get lunar info for specific date
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.GetLunarInfo \
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.GetLunarInfo \
   string:"2025-10-29"
 ```
 
@@ -383,16 +383,16 @@ JSON string containing reminder list.
 #### Example Usage
 ```bash
 # Get reminders for next 24 hours
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.GetReminders int32:24
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.GetReminders int32:24
 
 # Get reminders for next 72 hours
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.GetReminders int32:72
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.GetReminders int32:72
 
 # Get reminders for next week
-dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-  /com/deepin/Calendar com.deepin.Calendar.GetReminders int32:168
+dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+  /com/lingmo/Calendar com.lingmo.Calendar.GetReminders int32:168
 ```
 
 ## Error Handling
@@ -461,16 +461,16 @@ import dbus
 
 def query_today_schedules():
     bus = dbus.SessionBus()
-    calendar = bus.get_object('com.deepin.Calendar', '/com/deepin/Calendar')
-    iface = dbus.Interface(calendar, 'com.deepin.Calendar')
+    calendar = bus.get_object('com.lingmo.Calendar', '/com/lingmo/Calendar')
+    iface = dbus.Interface(calendar, 'com.lingmo.Calendar')
     
     result = iface.QuerySchedules('today')  # or use 'day'
     return json.loads(result)
 
 def create_meeting(title, start_time, end_time):
     bus = dbus.SessionBus()
-    calendar = bus.get_object('com.deepin.Calendar', '/com/deepin/Calendar')
-    iface = dbus.Interface(calendar, 'com.deepin.Calendar')
+    calendar = bus.get_object('com.lingmo.Calendar', '/com/lingmo/Calendar')
+    iface = dbus.Interface(calendar, 'com.lingmo.Calendar')
     
     schedule_data = {
         "title": title,
@@ -490,8 +490,8 @@ def create_meeting(title, start_time, end_time):
 # Function to query schedules
 query_schedules() {
     local query="$1"
-    dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-        /com/deepin/Calendar com.deepin.Calendar.QuerySchedules \
+    dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+        /com/lingmo/Calendar com.lingmo.Calendar.QuerySchedules \
         string:"$query" | grep -o '".*"' | sed 's/"//g' | tail -1
 }
 
@@ -503,8 +503,8 @@ create_schedule() {
     
     local schedule_data="{\"title\":\"$title\",\"startTime\":\"$start_time\",\"endTime\":\"$end_time\"}"
     
-    dbus-send --session --print-reply --dest="com.deepin.Calendar" \
-        /com/deepin/Calendar com.deepin.Calendar.CreateSchedule \
+    dbus-send --session --print-reply --dest="com.lingmo.Calendar" \
+        /com/lingmo/Calendar com.lingmo.Calendar.CreateSchedule \
         string:"$schedule_data" | grep -o '".*"' | sed 's/"//g' | tail -1
 }
 
@@ -581,8 +581,8 @@ dbus-send --session --print-reply --dest=org.freedesktop.DBus \
     /org/freedesktop/DBus org.freedesktop.DBus.ListNames
 
 # Introspect calendar service
-dbus-send --session --print-reply --dest=com.deepin.Calendar \
-    /com/deepin/Calendar org.freedesktop.DBus.Introspectable.Introspect
+dbus-send --session --print-reply --dest=com.lingmo.Calendar \
+    /com/lingmo/Calendar org.freedesktop.DBus.Introspectable.Introspect
 ```
 
 ## Best Practices

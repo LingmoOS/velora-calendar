@@ -114,7 +114,7 @@ bool isCommunityEdition()
         return cachedResult;
     }
 
-    QDBusInterface interface("org.deepin.dde.SystemInfo1",
+    QDBusInterface interface("org.lingmo.SystemInfo1",
                             "/org/deepin/dde/SystemInfo1",
                             "org.deepin.dde.SystemInfo1",
                             QDBusConnection::sessionBus());

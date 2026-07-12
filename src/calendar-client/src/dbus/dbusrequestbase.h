@@ -9,7 +9,7 @@
 #include <QDBusAbstractInterface>
 #include <QDBusPendingReply>
 
-#define DBUS_SERVER_NAME "com.deepin.dataserver.Calendar"
+#define DBUS_SERVER_NAME "com.lingmo.dataserver.Calendar"
 
 //继承QDbus接口类，包装自定义接口访问
 class DbusRequestBase : public QDBusAbstractInterface
